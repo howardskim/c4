@@ -66,7 +66,6 @@ function handleMouseOut(e){
 function getFirstOpenCellForColumn(colIndex){
     let column = columns[colIndex];
     let columnWithoutTop = column.slice(0, 6);
-    console.log(columnWithoutTop);
     for(let cell of columnWithoutTop){
         let classLists = getClassArray(cell);
         if(!classLists.includes('yellow') && !classLists.includes('red')){
@@ -103,8 +102,59 @@ function handleCellClick(e){
     yellowIsNext = !yellowIsNext;
 }
 
+function getColorOfCell(cell){
+    let classList = getClassArray(cell);
+    if (classList.includes('yellow')) {
+        return 'yellow';
+    };
+    if (classList.includes('red')) {
+        return 'red';
+    }
+    return null;
+}
+
+function checkVictory(array){
+    if(array.length >= 4){
+        gameisLive = false;
+        for(let cell of array){
+            cell.classList.add('win');
+        }
+        statusSpan.textContent = `${yellowIsNext ? 'Yellow' : 'Red'} has won`
+    }
+}
+
 function checkStatus(cell){
-    console.log(cell);
+    // debugger;
+    let[row, col] = getCellLocation(cell);
+    let color = getColorOfCell(cell);
+    if(!color) return;
+    //Check horizontally
+    let winningCells = [cell];
+    console.log(winningCells);
+    let rowToCheck = row;
+    let colToCheckLeft = col - 1;
+    //Check Left
+    while (colToCheckLeft >= 0){
+        let cellToCheck = rows[rowToCheck][colToCheckLeft];
+        if(getColorOfCell(cellToCheck) == color){
+            winningCells.push(cellToCheck);
+            colToCheckLeft--
+        } else {
+            break;
+        }
+    };
+    let colToCheckRight = col + 1;
+    //Check Right
+    while (colToCheckRight <= 6) {
+        let cellToCheck = rows[rowToCheck][colToCheckRight];
+        if (getColorOfCell(cellToCheck) === color) {
+            winningCells.push(cellToCheck);
+            colToCheckRight++
+        } else {
+            break;
+        }
+    }
+    checkVictory(winningCells);
 }
 
 for(let row of rows){
